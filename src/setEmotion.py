@@ -45,7 +45,7 @@ class EmotionNode(Node):
         response.message = f"Emoção '{emotion}' publicada em /hera/emotion."
         return response
 
-  def main(args=None):
+def main(args=None):
     rclpy.init(args=args)
     speak_node = EmotionNode()
     rclpy.spin(emotion_node)
