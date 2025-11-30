@@ -226,3 +226,46 @@ setInterval(piscar, Math.random() * 2000 + 3000);
 
 // ===== inicialização =====
 mudarExpressao('neutra');
+
+let ros = null;
+
+function conectarROS() {
+  if (typeof ROSLIB === 'undefined') {
+    console.warn('[HERA] ROSLIB não carregado. Verifique o <script> roslib.min.js no HTML.');
+    return;
+  }
+
+  const url = (typeof ROSBRIDGE_URL !== 'undefined') ? ROSBRIDGE_URL : 'ws://localhost:9090';
+
+  ros = new ROSLIB.Ros({ url });
+
+  ros.on('connection', () => {
+    console.log('[HERA] Conectado ao rosbridge em', url);
+  });
+
+  ros.on('error', (error) => {
+    console.error('[HERA] Erro de conexão rosbridge:', error);
+  });
+
+  ros.on('close', () => {
+    console.warn('[HERA] Conexão com rosbridge fechada.');
+  });
+
+  // Tópico que o node Python publica
+  const emotionSub = new ROSLIB.Topic({
+    ros: ros,
+    name: 'hera/emotion',
+    messageType: 'std_msgs/String'
+  });
+
+  emotionSub.subscribe((msg) => {
+    console.log('[HERA] Emoção recebida do ROS:', msg.data);
+    // Usa a função que você já tem no JS
+    setEmocao(msg.data);
+  });
+}
+
+// ao carregar a página
+window.addEventListener('load', () => {
+  conectarROS();
+});
