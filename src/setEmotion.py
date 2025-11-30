@@ -45,13 +45,10 @@ class EmotionNode(Node):
         response.message = f"Emoção '{emotion}' publicada em /hera/emotion."
         return response
 
-def main(args=None):
-    rclpy.init(args=args)
-    speak_node = EmotionNode()
-    rclpy.spin(emotion_node)
-    emotion_node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == "__main__":
-    main()
-
+if __name__ == '__main__':
+    rclpy.init(args=None)
+    emotion_node = EmotionNode()
+    try:
+        rclpy.spin(emotion_node)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt, shutting down...")
