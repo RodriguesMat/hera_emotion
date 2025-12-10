@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Robô HERA (emoções enxutas + idle)</title>
+  <title>Rosto HERA</title>
   <style>
     body {
       background: linear-gradient(135deg, #0A2347 0%, #1a3a5c 100%);
@@ -12,147 +12,182 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
     }
+    
     .controls {
-      margin-top: 20px;
+      position: fixed;
+      bottom: 20px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      width: min(640px, 95vw);
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      backdrop-filter: blur(4px);
     }
+    
     button {
-      padding: 10px 14px;
-      font-size: 14px;
+      padding: 8px 12px;
+      font-size: 12px;
       border: none;
-      border-radius: 20px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      background: linear-gradient(45deg, #6DD0FF, #9401f6);
-      color: white;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      background: rgba(255, 255, 255, 0.9);
+      color: #0A2347;
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: transform 0.2s;
     }
-    button:hover { transform: translateY(-1px); }
-    .title {
-      color: #FFEB99;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+
+    button:hover { 
+      transform: scale(1.05); 
+      background: #fff;
+    }
+
+    svg {
+      filter: drop-shadow(0 0 30px rgba(0,0,0,0.4));
     }
   </style>
 </head>
 <body>
 
-<div class="title">HERA</div>
 <div id="svg-container">
-  <svg width="350" height="450" viewBox="0 0 350 450" xmlns="http://www.w3.org/2000/svg">
+  <svg width="400" height="500" viewBox="0 0 350 450" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="faceGradient" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" style="stop-color:#fff8dc;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#f5f5dc;stop-opacity:1" />
+      <radialGradient id="faceGradient" cx="50%" cy="40%" r="65%">
+        <stop offset="0%" style="stop-color:#fcebd5;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#e0cda5;stop-opacity:1" />
       </radialGradient>
+      
+      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:1" />
+        <stop offset="40%" style="stop-color:#FFD700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1" />
+      </linearGradient>
+
+      <radialGradient id="peacockGradient" cx="30%" cy="30%" r="70%">
+        <stop offset="0%" style="stop-color:#00ffcc;stop-opacity:1" />
+        <stop offset="60%" style="stop-color:#008080;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#002030;stop-opacity:1" />
+      </radialGradient>
+
+      <radialGradient id="hairGradient" cx="50%" cy="30%" r="90%">
+        <stop offset="0%" style="stop-color:#5c4033;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#2e1f18;stop-opacity:1" />
+      </radialGradient>
+
       <radialGradient id="eyeGradient" cx="50%" cy="50%" r="50%">
         <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-        <stop offset="70%" style="stop-color:#e6f3ff;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#cce7ff;stop-opacity:1" />
+        <stop offset="85%" style="stop-color:#e6f3ff;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#cfe2f3;stop-opacity:1" />
       </radialGradient>
+
       <radialGradient id="pupilGradient" cx="30%" cy="30%" r="70%">
-        <stop offset="0%" style="stop-color:#089b51fd;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#06793f8e;stop-opacity:1" />
-      </radialGradient>
-      <radialGradient id="hairGradient" cx="50%" cy="30%" r="70%">
-        <stop offset="0%" style="stop-color:#6b4423;stop-opacity:1" />
-        <stop offset="50%" style="stop-color:#4a3728;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#2d1f1a;stop-opacity:1" />
-      </radialGradient>
-      <linearGradient id="crownGold" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
-        <stop offset="50%" style="stop-color:#ffb347;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#daa520;stop-opacity:1" />
-      </linearGradient>
-      <radialGradient id="gemGradient" cx="30%" cy="30%" r="70%">
-        <stop offset="0%" style="stop-color:#00ff88;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#006644;stop-opacity:1" />
+        <stop offset="0%" style="stop-color:#2E8B57;stop-opacity:1" /> 
+        <stop offset="100%" style="stop-color:#004d26;stop-opacity:1" />
       </radialGradient>
     </defs>
 
-    <!-- agrupamento para mover a cabeça -->
     <g id="hera">
-      <!-- Cabelo -->
-      <path d="M75,150 C65,110 85,80 115,70 C135,60 155,55 175,55 C195,55 215,60 235,70 C265,80 285,110 275,150 C280,190 270,230 250,260 C235,280 220,290 205,295 L200,180 C190,170 180,165 175,165 C170,165 160,170 150,180 L145,295 C130,290 115,280 100,260 C80,230 70,190 75,150Z" fill="url(#hairGradient)" opacity="0.9"/>
-      <path d="M85,180 C90,200 95,220 100,240 C105,260 110,280 115,275" stroke="#362a2a" stroke-width="3" fill="none" opacity="0.7"/>
-      <path d="M265,180 C260,200 255,220 250,240 C245,260 240,280 235,275" stroke="#362a2a" stroke-width="3" fill="none" opacity="0.7"/>
-      <path d="M175,60 C185,65 195,75 200,95 C205,115 210,135 215,155" stroke="#362a2a" stroke-width="2" fill="none" opacity="0.5"/>
-      <!-- Cabeça -->
-      <path d="M95,180 Q175,100 255,180 Q255,320 175,320 Q95,320 95,180Z" fill="url(#faceGradient)" stroke="#e6d7a3" stroke-width="1.5"/>
-      <!-- Coroa -->
-      <g id="coroa">
-        <path d="M75,160 Q175,140 175,160 Q175,175 175,110 Q75,175 75,160Z" fill="url(#crownGold)" opacity="0.8"/>
-        <path d="M175,160 Q175,140 275,160 Q275,175 175,110 Q175,175 175,160Z" fill="url(#crownGold)" opacity="0.8"/>
-        <circle cx="175" cy="133" r="10" fill="url(#gemGradient)"/>
-        <circle cx="175" cy="133" r="4" fill="#089b51fd"/>
-        <ellipse cx="175" cy="125" rx="6" ry="10" fill="url(#gemGradient)"/>
-        <ellipse cx="175" cy="125" rx="3" ry="6" fill="#089b51fd"/>
+      
+      <path d="
+        M 80,180 
+        C 85,110 110,90 175,90 
+        C 240,90 265,110 270,180 
+        L 270,260
+        C 285,300 255,320 235,300
+        C 220,330 190,320 175,340
+        C 160,320 130,330 115,300
+        C 95,320 65,300 80,260
+        Z" 
+        fill="url(#hairGradient)"
+      />
+
+      <path d="M95,180 Q175,90 255,180 Q255,320 175,320 Q95,320 95,180Z" fill="url(#faceGradient)" stroke="#d6c098" stroke-width="1"/>
+
+      <g id="orelha-esq">
+        <ellipse cx="95" cy="235" rx="10" ry="22" fill="url(#faceGradient)"/>
+        <circle cx="95" cy="255" r="3" fill="#FFD700"/>
+        <path d="M95,258 L92,275 Q95,280 98,275 Z" fill="url(#peacockGradient)"/> 
       </g>
-      <!-- Orelhas -->
-      <ellipse cx="95" cy="240" rx="8" ry="25" fill="url(#faceGradient)"/>
-      <ellipse cx="255" cy="240" rx="8" ry="25" fill="url(#faceGradient)"/>
-      <!-- Olhos -->
+      <g id="orelha-dir">
+        <ellipse cx="255" cy="235" rx="10" ry="22" fill="url(#faceGradient)"/>
+        <circle cx="255" cy="255" r="3" fill="#FFD700"/>
+        <path d="M255,258 L252,275 Q255,280 258,275 Z" fill="url(#peacockGradient)"/>
+      </g>
+
+      <path d="M85,180 Q100,135 175,135 Q250,135 265,180 Q260,155 175,155 Q90,155 85,180" fill="url(#hairGradient)"/>
+
+      <g id="diadema">
+        <path d="M88,165 Q175,135 262,165 L260,145 Q175,110 90,145 Z" fill="url(#goldGradient)" filter="drop-shadow(0 2px 2px rgba(0,0,0,0.3))"/>
+        <path d="M165,140 Q175,130 185,140 Q175,160 165,140" fill="url(#peacockGradient)" stroke="#FFD700" stroke-width="1"/>
+      </g>
+
+      <ellipse id="bochecha-esq" cx="125" cy="250" rx="18" ry="12" fill="#d16b76" opacity="0.2"/>
+      <ellipse id="bochecha-dir" cx="225" cy="250" rx="18" ry="12" fill="#d16b76" opacity="0.2"/>
+
       <g id="olhos">
-        <ellipse id="olho-esq-base" cx="145" cy="220" rx="20" ry="15" fill="url(#eyeGradient)" stroke="#b8d4f0" stroke-width="1"/>
-        <circle id="pupila-esq" cx="145" cy="220" r="7" fill="url(#pupilGradient)"/>
-        <circle id="brilho-esq" cx="142" cy="217" r="2.5" fill="#ffffff" opacity="0.9"/>
-        <ellipse id="olho-dir-base" cx="205" cy="220" rx="20" ry="15" fill="url(#eyeGradient)" stroke="#b8d4f0" stroke-width="1"/>
-        <circle id="pupila-dir" cx="205" cy="220" r="7" fill="url(#pupilGradient)"/>
-        <circle id="brilho-dir" cx="202" cy="217" r="2.5" fill="#ffffff" opacity="0.9"/>
+        <ellipse id="olho-esq-base" cx="145" cy="220" rx="22" ry="17" fill="url(#eyeGradient)"/>
+        <ellipse id="olho-dir-base" cx="205" cy="220" rx="22" ry="17" fill="url(#eyeGradient)"/>
+        
+        <g id="pupila-esq">
+            <circle cx="145" cy="220" r="9" fill="url(#pupilGradient)"/>
+            <circle cx="145" cy="220" r="4" fill="#000"/>
+            <circle cx="142" cy="216" r="2.5" fill="#fff" opacity="0.8"/>
+        </g>
+        <g id="pupila-dir">
+            <circle cx="205" cy="220" r="9" fill="url(#pupilGradient)"/>
+            <circle cx="205" cy="220" r="4" fill="#000"/>
+            <circle cx="202" cy="216" r="2.5" fill="#fff" opacity="0.8"/>
+        </g>
       </g>
-      <!-- Pálpebras -->
-      <path id="palpebra-esq" d="M125,210 Q145,205 165,210" stroke="#d4af37" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path id="palpebra-dir" d="M185,210 Q205,205 225,210" stroke="#d4af37" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- Cílios -->
-      <g id="cilios" stroke="#8b7355" stroke-width="1" stroke-linecap="round">
-        <line x1="130" y1="208" x2="128" y2="203"/>
-        <line x1="140" y1="206" x2="138" y2="201"/>
-        <line x1="145" y1="205" x2="145" y2="200"/>
-        <line x1="150" y1="206" x2="152" y2="201"/>
-        <line x1="160" y1="208" x2="162" y2="203"/>
-        <line x1="190" y1="208" x2="188" y2="203"/>
-        <line x1="200" y1="206" x2="198" y2="201"/>
-        <line x1="205" y1="205" x2="205" y2="200"/>
-        <line x1="210" y1="206" x2="212" y2="201"/>
-        <line x1="220" y1="208" x2="222" y2="203"/>
+      
+      <path d="M123,212 Q145,202 167,212" stroke="#2a1d18" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>
+      <path d="M183,212 Q205,202 227,212" stroke="#2a1d18" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>
+
+      <g id="cilios" stroke="#2a1d18" stroke-width="1" stroke-linecap="round">
+        <line x1="123" y1="212" x2="118" y2="205" />
+        <line x1="130" y1="208" x2="126" y2="200" />
+        <line x1="145" y1="206" x2="145" y2="196" />
+        <line x1="160" y1="208" x2="164" y2="200" />
+        <line x1="167" y1="212" x2="173" y2="206" />
+        <line x1="183" y1="212" x2="177" y2="206" />
+        <line x1="190" y1="208" x2="186" y2="200" />
+        <line x1="205" y1="206" x2="205" y2="196" />
+        <line x1="220" y1="208" x2="224" y2="200" />
+        <line x1="227" y1="212" x2="232" y2="205" />
       </g>
-      <!-- Sobrancelhas -->
-      <path id="sobrancelha-esq" d="M130,195 Q145,190 160,195" stroke="#8b7355" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path id="sobrancelha-dir" d="M190,195 Q205,190 220,195" stroke="#8b7355" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- Nariz -->
-      <ellipse cx="175" cy="245" rx="2" ry="6" fill="#e6d7a3" opacity="0.5"/>
-      <!-- Boca -->
-      <path id="boca" d="M155,280 Q175,295 195,280" stroke="#f08080" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <ellipse id="labio-superior" cx="175" cy="278" rx="15" ry="2" fill="#f08080" opacity="0.3"/>
-      <!-- Bochechas -->
-      <ellipse id="bochecha-esq" cx="125" cy="250" rx="12" ry="8" fill="#ffb6c1" opacity="0.3"/>
-      <ellipse id="bochecha-dir" cx="225" cy="250" rx="12" ry="8" fill="#ffb6c1" opacity="0.3"/>
+
+      <path id="palpebra-esq" d="M123,210 Q145,200 167,210" stroke="#d4af37" stroke-width="0" fill="none"/>
+      <path id="palpebra-dir" d="M183,210 Q205,200 227,210" stroke="#d4af37" stroke-width="0" fill="none"/>
+      
+      <path id="sobrancelha-esq" d="M125,195 Q145,188 165,195" stroke="#4a3025" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path id="sobrancelha-dir" d="M185,195 Q205,188 225,195" stroke="#4a3025" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      
+      <path d="M175,230 L172,250 L175,254 L178,250 Z" fill="#c9b293" opacity="0.6"/>
+      
+      <path id="boca" d="M155,285 Q175,295 195,285" stroke="#cc6666" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path id="labio-superior" d="M160,285 Q175,288 190,285" stroke="#b35959" stroke-width="2" fill="none" opacity="0.6" stroke-linecap="round"/>
+
     </g>
   </svg>
 </div>
 
 <div class="controls">
-  <button onclick="setEmocao('alegria')">😊 Alegria</button>
-  <button onclick="setEmocao('surpresa')">😲 Surpresa</button>
-  <button onclick="setEmocao('nojo')">🤢 Nojo</button>
-  <button onclick="setEmocao('angústia')">🥺 Angústia</button>
-  <button onclick="setEmocao('pensativa')">🤔 Pensativa</button>
-  <button onclick="setEmocao('neutra')">👑 Neutra (confiante)</button>
-  <button onclick="iniciarFala()">🗣️ Falando</button>
-  <button onclick="pararFala()">🤐 Parar Fala</button>
+  <button onclick="setEmocao('alegria')">Alegria</button>
+  <button onclick="setEmocao('surpresa')">Surpresa</button>
+  <button onclick="setEmocao('nojo')">Nojo</button>
+  <button onclick="setEmocao('angustia')">Angústia</button>
+  <button onclick="setEmocao('pensativa')">Pensativa</button>
+  <button onclick="setEmocao('neutra')">Neutra</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
 
 <script>
+  // Define o IP aqui
   const ROSBRIDGE_URL = 'ws://192.168.0.227:9090';
 </script>
 
