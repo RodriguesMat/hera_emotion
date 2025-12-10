@@ -1,5 +1,6 @@
 // ===== util =====
 const getElement = (id) => document.getElementById(id);
+const easing = { smooth: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t };
 
 // ===== estado global =====
 let animacaoFalaAtiva = false;
@@ -11,227 +12,201 @@ let baseHead = { x: 0, y: 0, rot: 0 };
 let idleAtivo = true;
 let idleRAF = null;
 
-// ===== helpers =====
+// ===== Configurações Base do Rosto =====
+const BASE = {
+    pupilaEsqCx: 145, pupilaDirCx: 205,
+    pupilaCy: 220,
+    palpebrasY: 210, 
+    head: { x: 0, y: 0, rot: 0 }
+};
+
+// ===== helpers de animação =====
 function aplicarTransformacaoCabeca({ x = 0, y = 0, rot = 0 } = {}) {
   const cx = 175, cy = 220;
   const hera = getElement("hera");
   if (!hera) return;
+  // Aplica transformações (Flutuação contínua)
   hera.setAttribute("transform", `translate(${x}, ${y}) rotate(${rot}, ${cx}, ${cy})`);
 }
 
-// idle sway + flutuação + head bob
+// Loop Idle (Respiração + Movimento contínuo)
 function loopIdle(ts) {
   if (!idleAtivo) return;
 
-  const swayX = Math.sin(ts / 1600) * 1.5;
-  const swayY = Math.cos(ts / 1800) * 1.2;
-  const swayRot = Math.sin(ts / 2000) * 1.2;
+  // Aumentei a intensidade para ser visível na neutra
+  const swayX = Math.sin(ts / 2500) * 3.0;       // Balanço lateral
+  const swayY = Math.cos(ts / 2000) * 2.5;       // Balanço vertical leve
+  const swayRot = Math.sin(ts / 3500) * 2.5;     // Rotação sutil
+  const floatY = Math.sin(ts / 2200) * 4.5;      // Respiração (mais visível)
 
-  // flutuação lenta (±5px)
-  const floatY = Math.sin(ts / 3000) * 5;
-
-  // bob da fala
-  const bob = animacaoFalaAtiva ? Math.sin(ts / 120) * 0.6 : 0;
-  const bobY = animacaoFalaAtiva ? Math.cos(ts / 140) * 0.6 : 0;
+  // bob extra se estiver falando
+  const bob = animacaoFalaAtiva ? Math.sin(ts / 120) * 1.5 : 0;
 
   aplicarTransformacaoCabeca({
     x: baseHead.x + swayX,
-    y: baseHead.y + swayY + floatY + bobY,
-    rot: baseHead.rot + swayRot + bob
+    y: baseHead.y + floatY + bob,
+    rot: baseHead.rot + swayRot
   });
 
   idleRAF = requestAnimationFrame(loopIdle);
 }
+// Inicia o loop imediatamente
 idleRAF = requestAnimationFrame(loopIdle);
 
-// ===== expressões (enxutas) =====
+
+// ===== Definição das Expressões =====
+const EMOCOES = {
+    alegria: {
+        bocaPath: "M152,285 Q175,305 198,285",
+        sobEsq: "M125,190 Q145,185 165,190", sobDir: "M185,190 Q205,185 225,190",
+        pupilaY: 218, palpY: 205, bochechaOp: 0.6, head: { x: 0, y: -2, rot: -2 }
+    },
+    surpresa: {
+        bocaPath: "M170,290 Q175,310 180,290",
+        sobEsq: "M125,175 Q145,170 165,175", sobDir: "M185,175 Q205,170 225,175",
+        pupilaY: 220, palpY: 200, bochechaOp: 0.3, head: { x: 0, y: -5, rot: 0 }
+    },
+    nojo: {
+        bocaPath: "M160,288 Q175,282 190,288",
+        sobEsq: "M125,200 Q145,195 165,202", sobDir: "M185,202 Q205,195 225,200",
+        pupilaY: 222, palpY: 212, bochechaOp: 0.2, head: { x: -3, y: 2, rot: -4 }
+    },
+    angustia: {
+        bocaPath: "M155,295 Q175,285 195,295",
+        sobEsq: "M125,195 Q145,185 165,195", sobDir: "M185,195 Q205,185 225,195",
+        pupilaY: 225, palpY: 214, bochechaOp: 0.2, head: { x: 0, y: 4, rot: 3 }
+    },
+    pensativa: {
+        bocaPath: "M160,290 Q175,290 190,290",
+        sobEsq: "M125,190 Q145,188 165,192", sobDir: "M185,198 Q205,194 225,196",
+        pupilaY: 215, palpY: 210, bochechaOp: 0.3, head: { x: -4, y: 3, rot: -3 }
+    },
+    neutra: {
+        bocaPath: "M155,285 Q175,295 195,285",
+        sobEsq: "M125,195 Q145,188 165,195", sobDir: "M185,195 Q205,188 225,195",
+        pupilaY: 220, palpY: 210, bochechaOp: 0.3, head: { x: 0, y: 0, rot: 0 }
+    }
+};
+
 function mudarExpressao(tipo) {
   if (animacaoFalaAtiva) pararFala();
   estadoAtual = tipo;
 
-  const BASE = {
-    pupilaEsqCx: 145, pupilaDirCx: 205,
-    pupilaEsqCy: 218, pupilaDirCy: 218,
-    palpebrasY: 208, bochechaOpacity: 0.4,
-    head: { x: 0, y: 0, rot: 0 }
-  };
-
-  const E = {
-    alegria: {
-      bocaPath: "M155,280 Q175,292 195,280",
-      sobrancelhaEsqPath: "M130,194 Q145,189 160,194",
-      sobrancelhaDirPath: "M190,194 Q205,189 220,194",
-      pupilaEsqCx: BASE.pupilaEsqCx, pupilaDirCx: BASE.pupilaDirCx,
-      pupilaEsqCy: 220, pupilaDirCy: 220,
-      palpebrasY: 206, bochechaOpacity: 0.55,
-      head: { x: 0, y: -2, rot: -2 }
-    },
-    surpresa: {
-      bocaPath: "M170,285 Q175,294 180,285",
-      sobrancelhaEsqPath: "M130,182 Q145,178 160,182",
-      sobrancelhaDirPath: "M190,182 Q205,178 220,182",
-      pupilaEsqCx: BASE.pupilaEsqCx, pupilaDirCx: BASE.pupilaDirCx,
-      pupilaEsqCy: 218, pupilaDirCy: 218,
-      palpebrasY: 202, bochechaOpacity: 0.45,
-      head: { x: 0, y: -6, rot: -3 }
-    },
-    nojo: {
-      bocaPath: "M160,279 Q175,276 190,279",
-      sobrancelhaEsqPath: "M128,196 Q145,192 162,197",
-      sobrancelhaDirPath: "M190,197 Q205,192 220,195",
-      pupilaEsqCx: BASE.pupilaEsqCx - 1, pupilaDirCx: BASE.pupilaDirCx - 2,
-      pupilaEsqCy: 217, pupilaDirCy: 217,
-      palpebrasY: 209, bochechaOpacity: 0.25,
-      head: { x: -6, y: 0, rot: -8 }
-    },
-    angústia: {
-      bocaPath: "M156,286 Q175,273 194,286",
-      sobrancelhaEsqPath: "M128,204 Q145,198 162,204",
-      sobrancelhaDirPath: "M190,204 Q205,198 220,204",
-      pupilaEsqCx: BASE.pupilaEsqCx - 1, pupilaDirCx: BASE.pupilaDirCx + 1,
-      pupilaEsqCy: 226, pupilaDirCy: 226,
-      palpebrasY: 216, bochechaOpacity: 0.22,
-      head: { x: -2, y: 5, rot: 4 }
-    },
-    pensativa: {
-      bocaPath: "M160,283 Q175,280 190,284",
-      sobrancelhaEsqPath: "M128,191 Q145,186 162,193",
-      sobrancelhaDirPath: "M190,196 Q205,191 220,194",
-      pupilaEsqCx: BASE.pupilaEsqCx + 2, pupilaDirCx: BASE.pupilaDirCx + 2,
-      pupilaEsqCy: 216, pupilaDirCy: 216,
-      palpebrasY: 210, bochechaOpacity: 0.32,
-      head: { x: -8, y: 3, rot: -6 }
-    },
-    // NEUTRA = antiga "confiança"
-    neutra: {
-      bocaPath: "M160,281 Q175,286 190,281",
-      sobrancelhaEsqPath: "M130,192 Q145,188 160,192",
-      sobrancelhaDirPath: "M190,192 Q205,188 220,192",
-      pupilaEsqCx: BASE.pupilaEsqCx, pupilaDirCx: BASE.pupilaDirCx,
-      pupilaEsqCy: 218, pupilaDirCy: 218,
-      palpebrasY: 207, bochechaOpacity: 0.45,
-      head: { x: 1, y: -1, rot: -1 }
-    }
-  };
-
-  const S = E[tipo] || E.neutra;
-  baseHead = { ...S.head }; // idle usa esta base
+  const alvo = EMOCOES[tipo] || EMOCOES.neutra;
+  baseHead = { ...alvo.head }; // idle usa esta base para oscilar ao redor
 
   let startTime = null;
-  const duracao = 800;
+  const duracao = 500;
 
   function animate(time) {
     if (!startTime) startTime = time;
-    const t = Math.min((time - startTime) / duracao, 1);
+    const t = easing.smooth(Math.min((time - startTime) / duracao, 1));
 
-    getElement("boca").setAttribute("d", S.bocaPath);
-    getElement("sobrancelha-esq").setAttribute("d", S.sobrancelhaEsqPath);
-    getElement("sobrancelha-dir").setAttribute("d", S.sobrancelhaDirPath);
+    // Paths
+    getElement("boca").setAttribute("d", alvo.bocaPath);
+    getElement("sobrancelha-esq").setAttribute("d", alvo.sobEsq);
+    getElement("sobrancelha-dir").setAttribute("d", alvo.sobDir);
 
-    getElement("pupila-esq").setAttribute("cx", S.pupilaEsqCx);
-    getElement("pupila-dir").setAttribute("cx", S.pupilaDirCx);
-    getElement("pupila-esq").setAttribute("cy", S.pupilaEsqCy);
-    getElement("pupila-dir").setAttribute("cy", S.pupilaDirCy);
-    getElement("brilho-esq").setAttribute("cx", S.pupilaEsqCx - 3);
-    getElement("brilho-dir").setAttribute("cx", S.pupilaDirCx - 3);
-    getElement("brilho-esq").setAttribute("cy", S.pupilaEsqCy - 3);
-    getElement("brilho-dir").setAttribute("cy", S.pupilaDirCy - 3);
+    // Pupilas (Interpolação)
+    const deltaY = alvo.pupilaY - 220; // 220 é base
+    let deltaX = (tipo === 'pensativa') ? 8 : (tipo === 'nojo' ? -5 : 0);
+    
+    // Move o grupo da pupila
+    getElement("pupila-esq").setAttribute("transform", `translate(${deltaX * t}, ${deltaY * t})`);
+    getElement("pupila-dir").setAttribute("transform", `translate(${deltaX * t}, ${deltaY * t})`);
 
-    const y = S.palpebrasY;
-    const palpEsqPath = `M125,${y} Q145,${y - 5} 165,${y}`;
-    const palpDirPath = `M185,${y} Q205,${y - 5} 225,${y}`;
-    getElement("palpebra-esq").setAttribute("d", palpEsqPath);
-    getElement("palpebra-dir").setAttribute("d", palpDirPath);
+    // Pálpebras
+    const py = alvo.palpY;
+    getElement("palpebra-esq").setAttribute("d", `M123,${py} Q145,${py-8} 167,${py}`);
+    getElement("palpebra-dir").setAttribute("d", `M183,${py} Q205,${py-8} 227,${py}`);
 
-    getElement("bochecha-esq").setAttribute("opacity", S.bochechaOpacity);
-    getElement("bochecha-dir").setAttribute("opacity", S.bochechaOpacity);
+    // Bochechas
+    getElement("bochecha-esq").setAttribute("opacity", alvo.bochechaOp);
+    getElement("bochecha-dir").setAttribute("opacity", alvo.bochechaOp);
 
     if (t < 1) requestAnimationFrame(animate);
   }
   requestAnimationFrame(animate);
 }
 
-// ===== mapeamento/aliases (removidas → neutra confiante) =====
 function setEmocao(nome) {
-  const n = (nome || '').toLowerCase();
+  if (!nome) return;
+  const n = nome.toLowerCase();
 
   const mapa = {
-    alegria: 'alegria',
-    surpresa: 'surpresa',
-    nojo: 'nojo',
-    'angústia': 'angústia',
-    pensativa: 'pensativa',
-    neutra: 'neutra',
-
-    // tudo abaixo cai em NEUTRA (confiante)
-    confiança: 'neutra', amor: 'neutra', aprovação: 'neutra', submissão: 'neutra',
-    admiração: 'neutra', assombro: 'neutra',
-    medo: 'neutra', apreensão: 'neutra', intimidação: 'neutra', terror: 'neutra',
-    tristeza: 'neutra', remorso: 'neutra', pensativo: 'pensativa',
-    ira: 'neutra', irritação: 'neutra', agressividade: 'neutra',
-    antecipação: 'pensativa', vigilância: 'pensativa', interesse: 'pensativa',
-    repugnância: 'nojo', desaprovação: 'nojo'
+    // ALEGRIA
+    'alegria': 'alegria', 'felicidade': 'alegria', 'sorriso': 'alegria', 'contente': 'alegria',
+    // SURPRESA
+    'surpresa': 'surpresa', 'espanto': 'surpresa', 'assombro': 'surpresa',
+    // NOJO
+    'nojo': 'nojo', 'repugnância': 'nojo', 'desaprovação': 'nojo', 'eca': 'nojo',
+    
+    // ANGUSTIA 
+    'angústia': 'angustia', 
+    'angustia': 'angustia', 
+    'tristeza': 'angustia', 'choro': 'angustia', 
+    'sofrimento': 'angustia', 'medo': 'angustia', 'terror': 'angustia',
+    
+    // PENSATIVA
+    'pensativa': 'pensativa', 'pensativo': 'pensativa', 'confusa': 'pensativa', 
+    'antecipação': 'pensativa', 'vigilância': 'pensativa', 'interesse': 'pensativa',
+    
+    // NEUTRA (Fallback)
+    'neutra': 'neutra', 'confiança': 'neutra', 'amor': 'neutra', 'aprovação': 'neutra', 
+    'submissão': 'neutra', 'admiração': 'neutra', 'apreensão': 'neutra', 
+    'intimidação': 'neutra', 'remorso': 'neutra', 'ira': 'neutra', 
+    'irritação': 'neutra', 'agressividade': 'neutra'
   };
 
   mudarExpressao(mapa[n] || 'neutra');
 }
 
-// ===== fala =====
-function iniciarFala() {
-  if (animacaoFalaAtiva) return;
-  animacaoFalaAtiva = true;
+// ===== Fala =====
+//function iniciarFala() {
+//  if (animacaoFalaAtiva) return;
+//  animacaoFalaAtiva = true;
 
-  const formasBoca = [
-    "M155,280 Q175,295 195,280",
-    "M160,285 Q175,290 190,285",
-    "M165,283 Q175,288 185,283",
-    "M158,282 Q175,292 192,282",
-    "M162,284 Q175,289 188,284",
-    "M155,281 Q175,286 195,281",
-    "M150,282 Q175,297 200,282",
-    "M168,285 Q175,287 182,285"
-  ];
-  let i = 0;
+//  const formasBoca = [
+//    "M155,285 Q175,295 195,285", // Neutro
+//    "M160,288 Q175,305 190,288", // O
+//    "M158,285 Q175,280 192,285"  // Achatado
+//  ];
+//  let i = 0;
 
-  intervalFala = setInterval(() => {
-    if (!animacaoFalaAtiva) return;
-    getElement("boca").setAttribute("d", formasBoca[i]);
-    const variacao = Math.sin(i * 0.5) * 2;
-    getElement("labio-superior").setAttribute("ry", 2 + variacao);
-
-    const op = 0.3 + Math.random() * 0.2;
-    getElement("bochecha-esq").setAttribute("opacity", op);
-    getElement("bochecha-dir").setAttribute("opacity", op);
-
-    i = (i + 1) % formasBoca.length;
-  }, 120 + Math.random() * 80);
-}
+//  intervalFala = setInterval(() => {
+//    if (!animacaoFalaAtiva) return;
+//    getElement("boca").setAttribute("d", formasBoca[i % formasBoca.length]);
+//    i++;
+//  }, 120);
+//}
 
 function pararFala() {
   animacaoFalaAtiva = false;
   if (intervalFala) { clearInterval(intervalFala); intervalFala = null; }
-  mudarExpressao('neutra');
+  mudarExpressao(estadoAtual);
 }
 
-// ===== piscar =====
 function piscar() {
-  ["olho-esq-base", "olho-dir-base"].forEach(id => {
-    const olho = getElement(id);
-    const ry = olho.getAttribute("ry");
-    olho.setAttribute("ry", "2");
-    setTimeout(() => olho.setAttribute("ry", ry), 150);
-  });
+  const shutY = 220; // Pálpebra fechada
+  getElement("palpebra-esq").setAttribute("d", `M123,${shutY} Q145,${shutY} 167,${shutY}`);
+  getElement("palpebra-dir").setAttribute("d", `M183,${shutY} Q205,${shutY} 227,${shutY}`);
+  
+  setTimeout(() => {
+    const py = (EMOCOES[estadoAtual] || EMOCOES.neutra).palpY;
+    getElement("palpebra-esq").setAttribute("d", `M123,${py} Q145,${py-8} 167,${py}`);
+    getElement("palpebra-dir").setAttribute("d", `M183,${py} Q205,${py-8} 227,${py}`);
+  }, 150);
 }
-setInterval(piscar, Math.random() * 2000 + 3000);
+setInterval(piscar, Math.random() * 4000 + 3000);
 
-// ===== inicialização =====
+// ===== Inicialização e ROS =====
 mudarExpressao('neutra');
 
 let ros = null;
 
 function conectarROS() {
   if (typeof ROSLIB === 'undefined') {
-    console.warn('[HERA] ROSLIB não carregado. Verifique o <script> roslib.min.js no HTML.');
+    console.warn('[HERA] ROSLIB não carregado.');
     return;
   }
 
@@ -251,7 +226,6 @@ function conectarROS() {
     console.warn('[HERA] Conexão com rosbridge fechada.');
   });
 
-  // Tópico que o node Python publica
   const emotionSub = new ROSLIB.Topic({
     ros: ros,
     name: 'hera/emotion',
@@ -259,13 +233,11 @@ function conectarROS() {
   });
 
   emotionSub.subscribe((msg) => {
-    console.log('[HERA] Emoção recebida do ROS:', msg.data);
-    // Usa a função que você já tem no JS
+    console.log('[HERA] ROS msg:', msg.data);
     setEmocao(msg.data);
   });
 }
 
-// ao carregar a página
 window.addEventListener('load', () => {
   conectarROS();
 });
