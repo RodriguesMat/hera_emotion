@@ -18,7 +18,12 @@ class EmotionNode(Node):
             'angustia': 'angústia',
             'angústia': 'angústia',
             'pensativa': 'pensativa',
-            'neutra': 'neutra'
+            
+            'neutra': 'neutra',
+            'desviando': 'desviando',
+            'navegando': 'navegando',
+            'encontrado': 'encontrado',
+            'procurando': 'procurando'
         }
 
         self.get_logger().info('HERA Emotion Service pronto em /hera/say_emotion')
