@@ -14,7 +14,7 @@ find_package(rclpy REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 install(
-  DIRECTORY src include
+  DIRECTORY src include launch
   DESTINATION share/${PROJECT_NAME}
 )
 
