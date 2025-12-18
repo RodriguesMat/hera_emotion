@@ -79,5 +79,4 @@ Quando for rodar esse arquivo, tem que trocar o endereço de IP `192.168.0.227` 
  
 ----
 
-> Nota: Se for utilizar este rosto sem o ROS 2, para conseguir mudar as emoções manualmente, é necessário acessar o arquivo  
-> `include/hera_emotion/face.html` e descomentar as linhas 179 a 191. Isso fará com que os botões de controle apareçam na tela.
+> Nota: Se for utilizar este rosto sem o ROS 2, para conseguir mudar as emoções manualmente, é necessário acessar o arquivo  `include/hera_emotion/face.html` e descomentar as linhas 179 a 191. Isso fará com que os botões de controle apareçam na tela.
