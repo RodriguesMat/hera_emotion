@@ -11,18 +11,30 @@ class EmotionNode(Node):
         self.srv = self.create_service(SetEmotion, 'setEmotion', self.set_emotion)
 
         self.emotions_validas = {
-            'alegria': 'alegria',
-            'surpresa': 'surpresa',
-            'nojo': 'nojo',
-            'angustia': 'angústia',
-            'angústia': 'angústia',
-            'pensativa': 'pensativa',
+            #emoções
+            'alegria': 'alegria','felicidade': 'alegria', 'sorriso': 'alegria',
             
-            'neutra': 'neutra',
-            'desviando': 'desviando',
-            'navegando': 'navegando',
-            'encontrado': 'encontrado',
-            'procurando': 'procurando'
+            'surpresa': 'surpresa', 'espanto': 'surpresa', 
+            
+            'nojo': 'nojo','repugnância': 'nojo', 'desaprovação': 'nojo', 'eca': 'nojo',
+            'angustia': 'angústia', 'angústia': 'angústia', 'tristeza': 'angustia', 'choro': 'angustia', 
+            'sofrimento': 'angustia', 'medo': 'angustia', 'terror': 'angustia',
+            
+            'pensativa': 'pensativa','pensativo': 'pensativa', 'confusa': 'pensativa', 
+            'antecipação': 'pensativa', 'vigilância': 'pensativa', 'interesse': 'pensativa',
+            
+            #durante a task
+            'desviando': 'desviando', 'obstaculo': 'desviando', 'recalculando': 'desviando', 'desvio': 'desviando',
+            
+            'navegando': 'navegando', 'andando': 'navegando','movendo': 'navegando', 'caminhando': 'navegando',
+            
+            'encontrado': 'encontrado', 'encontrei': 'encontrado', 'pegando': 'encontrado', 
+            'agarra': 'encontrado', 'determinada': 'encontrado', 'foco': 'encontrado',
+            
+            'procurando': 'procurando', 'procurando': 'procurando', 'buscando': 'procurando', 'analisando': 'procurando',
+            
+            #neutra (inicial)
+            'neutra': 'neutra', 'confiança': 'neutra'
         }
 
         self.get_logger().info('HERA Emotion Service pronto em /hera/say_emotion')

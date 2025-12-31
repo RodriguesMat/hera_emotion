@@ -289,21 +289,18 @@ function setEmocao(nome) {
     // Emoções mesmo como alegria, surpresa, nojo, angustia e pensativa
     'alegria': 'alegria', 'felicidade': 'alegria', 'sorriso': 'alegria', 'contente': 'alegria',
     
-    'surpresa': 'surpresa', 'espanto': 'surpresa', 'assombro': 'surpresa',
+    'surpresa': 'surpresa', 'espanto': 'surpresa',
 
     'nojo': 'nojo', 'repugnância': 'nojo', 'desaprovação': 'nojo', 'eca': 'nojo',
     
-    'angústia': 'angustia', 
-    'angustia': 'angustia', 
-    'tristeza': 'angustia', 'choro': 'angustia', 
+    'angústia': 'angustia', 'angustia': 'angustia', 'tristeza': 'angustia', 'choro': 'angustia', 
     'sofrimento': 'angustia', 'medo': 'angustia', 'terror': 'angustia',
     
     'pensativa': 'pensativa', 'pensativo': 'pensativa', 'confusa': 'pensativa', 
     'antecipação': 'pensativa', 'vigilância': 'pensativa', 'interesse': 'pensativa',
 
     // Estados do rosto durante uma task
-    'procurando': 'procurando', 'buscando': 'procurando', 
-    'scanning': 'procurando', 'scan': 'procurando', 'analisando': 'procurando',
+    'procurando': 'procurando', 'buscando': 'procurando', 'analisando': 'procurando',
 
     'encontrado': 'encontrado', 'encontrei': 'encontrado', 
     'pegando': 'encontrado', 'agarra': 'encontrado', 
@@ -315,10 +312,8 @@ function setEmocao(nome) {
     'desviando': 'desviando', 'obstaculo': 'desviando', 
     'recalculando': 'desviando', 'desvio': 'desviando',
     
-    'neutra': 'neutra', 'confiança': 'neutra', 'amor': 'neutra', 'aprovação': 'neutra', 
-    'submissão': 'neutra', 'admiração': 'neutra', 'apreensão': 'neutra', 
-    'intimidação': 'neutra', 'remorso': 'neutra', 'ira': 'neutra', 
-    'irritação': 'neutra', 'agressividade': 'neutra'
+    // Neutra (inicial)
+    'neutra': 'neutra', 'confiança': 'neutra'
   };
 
   mudarExpressao(mapa[n] || 'neutra');
